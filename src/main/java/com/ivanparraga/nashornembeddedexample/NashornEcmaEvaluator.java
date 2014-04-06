@@ -3,13 +3,16 @@ package com.ivanparraga.nashornembeddedexample;
 import java.util.Arrays;
 import java.util.List;
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContextFactory;
-import org.mozilla.javascript.EcmaError;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
+import javax.script.Bindings;
+import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+import javax.script.SimpleBindings;
+
 
 public class NashornEcmaEvaluator {
+	private static final String NASHORN_ENGINE_NAME = "nashorn";
 	private static final String REFERENCE_ERROR = "ReferenceError";
 
 	public static EcmaValue evaluate(String expression, SymbolTable table) {
@@ -19,52 +22,54 @@ public class NashornEcmaEvaluator {
 
 	private static EcmaValue evaluateExpression(String expression,
 			List<EcmaVariable> variables) {
-
+		ScriptEngineManager scriptManager = new ScriptEngineManager();
+		ScriptEngine nashornEngine = scriptManager.getEngineByName(NASHORN_ENGINE_NAME);
+		
 		try {
-			Context context = ContextFactory.getGlobal().enterContext();
-			Scriptable scope = getScope(context, variables);
-			Object result = context.evaluateString(scope, expression, "", 1, null);
-			return EcmaValue.create(result);
-		} catch(EcmaError error) {
-			return handleException(error, variables);
-		} finally {
-			Context.exit();
+			putJavaVariablesIntoEngine(nashornEngine, variables);
+			Object javaValue = nashornEngine.eval(expression);
+			EcmaValue value = EcmaValue.create(javaValue);
+			return value;
+		} catch (ScriptException e) {
+			handleException(e, variables);
+			return null;
 		}
 	}
-
-	private static Scriptable getScope(Context context, List<EcmaVariable> variables) {
-		Scriptable scope = context.initStandardObjects();
-		putJavaVariablesIntoEcmaScope(scope, variables);
-		return scope;
-	}
-
-	private static void putJavaVariablesIntoEcmaScope(Scriptable scope,
+		
+	private static void putJavaVariablesIntoEngine(ScriptEngine engine,
 			List<EcmaVariable> variables) {
+		
+		Bindings bindings = new SimpleBindings();
 
 		for (EcmaVariable variable : variables) {
-			putJavaVariableIntoEcmaScope(scope, variable);
+			putJavaVariableIntoEcmaScope(bindings, variable);
 		}
+		
+		engine.setBindings(bindings, ScriptContext.GLOBAL_SCOPE);
 	}
 
-	private static void putJavaVariableIntoEcmaScope(Scriptable scope,
+	private static void putJavaVariableIntoEcmaScope(Bindings bindings,
 			EcmaVariable variable) {
 
 		String variableName = variable.getName();
 		EcmaValue ecmaValue = variable.getValue();
 		Object javaValue = ecmaValue.getValue();
 
-		Object wrappedValue = Context.javaToJS(javaValue, scope);
-		ScriptableObject.putProperty(scope, variableName, wrappedValue);
+		bindings.put(variableName, javaValue);
 	}
 
-	private static EcmaValue handleException(EcmaError error,
+	private static EcmaValue handleException(ScriptException exception,
 			List<EcmaVariable> variables) {
-
-		if (REFERENCE_ERROR.equals(error.getName())) {
+		if (isReferenceError(exception)) {
 			throw new IllegalArgumentException("I couldn't resolve some "
 				+ "variable on expression with vars "
-				+ Arrays.toString(variables.toArray()), error);
+				+ Arrays.toString(variables.toArray()), exception);
 		}
-		throw error;
+		throw new RuntimeException(exception);
+	}
+	
+	private static boolean isReferenceError(ScriptException exception) {
+		String message = exception.getMessage();
+		return message.startsWith(REFERENCE_ERROR);
 	}
 }
