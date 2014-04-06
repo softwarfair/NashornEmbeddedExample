@@ -1,4 +1,4 @@
-package com.ivanparraga.rhinoembeddedexample;
+package com.ivanparraga.nashornembeddedexample;
 
 public class EcmaVariable {
 	private final String name;

@@ -1,17 +1,21 @@
-package com.ivanparraga.rhinoembeddedexample;
+package com.ivanparraga.nashornembeddedexample;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-public class RhinoEcmaEvaluatorTest {
+import com.ivanparraga.nashornembeddedexample.EcmaValue;
+import com.ivanparraga.nashornembeddedexample.NashornEcmaEvaluator;
+import com.ivanparraga.nashornembeddedexample.SymbolTable;
+
+public class NashornEcmaEvaluatorTest {
 	@Test
 	public void testEvaluateSimpleIntExpressionNoVariable() {
 		int intValue = 3;
 		String expression = "" + intValue;
 		SymbolTable table = new SymbolTable();
 
-		EcmaValue actualValue = RhinoEcmaEvaluator.evaluate(expression, table);
+		EcmaValue actualValue = NashornEcmaEvaluator.evaluate(expression, table);
 
 		assertEquals(intValue, actualValue.getValue());
 	}
@@ -21,7 +25,7 @@ public class RhinoEcmaEvaluatorTest {
 		String expression = "Math.pow(2,3)";
 		SymbolTable table = new SymbolTable();
 
-		EcmaValue actualValue = RhinoEcmaEvaluator.evaluate(expression, table);
+		EcmaValue actualValue = NashornEcmaEvaluator.evaluate(expression, table);
 
 		double expectedValue = Math.pow(2, 3);
 		assertEquals(expectedValue, actualValue.getValue());
@@ -33,7 +37,7 @@ public class RhinoEcmaEvaluatorTest {
 		String expression = "\"" + strValue + "\"";
 		SymbolTable table = new SymbolTable();
 
-		EcmaValue actualValue = RhinoEcmaEvaluator.evaluate(expression, table);
+		EcmaValue actualValue = NashornEcmaEvaluator.evaluate(expression, table);
 
 		assertEquals(strValue, actualValue.getValue());
 	}
@@ -43,7 +47,7 @@ public class RhinoEcmaEvaluatorTest {
 		String expression = "\"how many? \" + 10";
 		SymbolTable table = new SymbolTable();
 
-		EcmaValue actualValue = RhinoEcmaEvaluator.evaluate(expression, table);
+		EcmaValue actualValue = NashornEcmaEvaluator.evaluate(expression, table);
 
 		String expectedValue = "how many? 10";
 		assertEquals(expectedValue, actualValue.getValue());
@@ -54,7 +58,7 @@ public class RhinoEcmaEvaluatorTest {
 		String expression = "i";
 		SymbolTable table = new SymbolTable();
 
-		RhinoEcmaEvaluator.evaluate(expression, table);
+		NashornEcmaEvaluator.evaluate(expression, table);
 	}
 
 	@Test
@@ -63,7 +67,7 @@ public class RhinoEcmaEvaluatorTest {
 		SymbolTable table = new SymbolTable();
 		table.putSymbol("i", EcmaValue.create(10));
 
-		EcmaValue actualValue = RhinoEcmaEvaluator.evaluate(expression, table);
+		EcmaValue actualValue = NashornEcmaEvaluator.evaluate(expression, table);
 
 		String expectedValue = "how many? 10";
 		assertEquals(expectedValue, actualValue.getValue());
@@ -76,7 +80,7 @@ public class RhinoEcmaEvaluatorTest {
 		table.putSymbol("i", EcmaValue.create(2));
 		table.putSymbol("j", EcmaValue.create(3));
 
-		EcmaValue actualValue = RhinoEcmaEvaluator.evaluate(expression, table);
+		EcmaValue actualValue = NashornEcmaEvaluator.evaluate(expression, table);
 
 		double expectedValue = Math.pow(2, 3);
 		assertEquals(expectedValue, actualValue.getValue());

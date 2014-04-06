@@ -1,4 +1,4 @@
-package com.ivanparraga.rhinoembeddedexample;
+package com.ivanparraga.nashornembeddedexample;
 
 import java.util.ArrayList;
 import java.util.HashMap;

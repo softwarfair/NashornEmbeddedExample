@@ -1,4 +1,4 @@
-package com.ivanparraga.rhinoembeddedexample;
+package com.ivanparraga.nashornembeddedexample;
 
 import java.util.Arrays;
 import java.util.List;
@@ -9,7 +9,7 @@ import org.mozilla.javascript.EcmaError;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
-public class RhinoEcmaEvaluator {
+public class NashornEcmaEvaluator {
 	private static final String REFERENCE_ERROR = "ReferenceError";
 
 	public static EcmaValue evaluate(String expression, SymbolTable table) {

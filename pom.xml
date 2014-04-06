@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.softwarfair.blog</groupId>
-	<artifactId>RhinoEmbeddedExample</artifactId>
+	<artifactId>NashornEmbeddedExample</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
